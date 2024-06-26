@@ -1,0 +1,174 @@
+CREATE TABLE `categorias` (
+  `idcategoria` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL
+);
+
+INSERT INTO `categorias` (`idcategoria`, `nome`) VALUES
+(1, 'SUPER LUXO'),
+(2, 'IMPORTADO'),
+(3, 'TECNOLOGIA'),
+(4, 'VINTAGE'),
+(5, 'SUPREMO'),
+(7, 'NACIONAL');
+
+
+CREATE TABLE `fornecedores` (
+  `idfornecedor` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `rua` varchar(255) NOT NULL,
+  `cidade` varchar(255) NOT NULL,
+  `estado` char(2) NOT NULL
+);
+
+INSERT INTO `fornecedores` (`idfornecedor`, `nome`, `rua`, `cidade`, `estado`) VALUES
+(1, 'Ajax SA', 'Rua Presidente Castelo Branco', 'Porto alegre', 'RS'),
+(2, 'Sansul SA', 'Avenida Brasil', 'Rio de Janeiro', 'RJ'),
+(3, 'South Chairs', 'Rua do Moinho', 'Santa Maria', 'RS'),
+(4, 'Elon Eletro', 'Abel Cabral', 'Parnamirim', 'RN'),
+(5, 'Mike Electro', 'Rua Pedro da Cunha', 'Curitiba', 'PR'),
+(6, 'Miranda', 'Prudente de Morais', 'Natal', 'RN'),
+(7, 'Nagem', 'Bernardo Vieira', 'João Pessoa', 'PB');
+
+CREATE TABLE `produtos` (
+  `idproduto` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `preco` float NOT NULL,
+  `idfornecedor` int(11) NOT NULL,
+  `idcategoria` int(11) NOT NULL
+);
+
+INSERT INTO `produtos` (`idproduto`, `nome`, `quantidade`, `preco`, `idfornecedor`, `idcategoria`) VALUES
+(2, 'Cadeira vermelha', 50, 2365, 2, 1),
+(3, 'Guarda Roupa Disney', 400, 829.5, 4, 1),
+(4, 'Torradeira azul', 20, 298, 3, 1),
+(5, 'TV', 30, 3300.27, 2, 2),
+(6, 'Iphone', 1, 5000, 4, 3),
+(7, 'Impressora 3D', 1, 9000, 5, 3);
+
+1-
+INSERT INTO `produtos` (`idproduto`, `nome`, `quantidade`, `preco`, `idfornecedor`, `idcategoria`) VALUES
+(2, 'Cadeira vermelha', 50, 2365, 2, 1),
+(3, 'Guarda Roupa Disney', 400, 829.5, 4, 1),
+(4, 'Torradeira azul', 20, 298, 3, 1),
+(5, 'TV', 30, 3300.27, 2, 2),
+(6, 'Iphone', 1, 5000, 4, 3),
+(7, 'Impressora 3D', 1, 9000, 5, 3);
+
+2-
+INSERT INTO `fornecedores` (`idfornecedor`, `nome`, `rua`, `cidade`, `estado`) VALUES
+(1, 'Ajax SA', 'Rua Presidente Castelo Branco', 'Porto alegre', 'RS'),
+(2, 'Sansul SA', 'Avenida Brasil', 'Rio de Janeiro', 'RJ'),
+(3, 'South Chairs', 'Rua do Moinho', 'Santa Maria', 'RS'),
+(4, 'Elon Eletro', 'Abel Cabral', 'Parnamirim', 'RN'),
+(5, 'Mike Electro', 'Rua Pedro da Cunha', 'Curitiba', 'PR'),
+(6, 'Miranda', 'Prudente de Morais', 'Natal', 'RN'),
+(7, 'Nagem', 'Bernardo Vieira', 'João Pessoa', 'PB');
+
+3-
+INSERT INTO `categorias` (`idcategoria`, `nome`) VALUES
+(1, 'SUPER LUXO'),
+(2, 'IMPORTADO'),
+(3, 'TECNOLOGIA'),
+(4, 'VINTAGE'),
+(5, 'SUPREMO'),
+(7, 'NACIONAL');
+
+4-
+UPDATE produtos
+SET preco = 298
+WHERE idproduto= 4;
+
+5-
+SELECT PRODUTOS.NOME, PRODUTOS.IDFORNECEDOR, FORNECEDORES.NOME
+FROM PRODUTOS, FORNECEDORES
+WHERE PRODUTOS.IDFORNECEDOR = FORNECEDORES.IDFORNECEDOR AND ESTADO = 'RJ';
+SELECT * FROM FORNECEDORES;
+SELECT * FROM PRODUTOS;
+
+6-
+SELECT PRODUTOS.NOME, PRODUTOS.IDFORNECEDOR, FORNECEDORES.NOME
+FROM PRODUTOS, FORNECEDORES
+WHERE PRODUTOS.IDFORNECEDOR = FORNECEDORES.IDFORNECEDOR AND ESTADO = 'RS';
+SELECT * FROM FORNECEDORES;
+SELECT * FROM PRODUTOS;
+
+7-
+SELECT PRODUTOS.NOME, PRODUTOS.IDFORNECEDOR, FORNECEDORES.NOME
+FROM PRODUTOS, FORNECEDORES
+WHERE PRODUTOS.IDFORNECEDOR = FORNECEDORES.IDFORNECEDOR AND ESTADO = 'SP';
+SELECT * FROM FORNECEDORES;
+SELECT * FROM PRODUTOS;
+
+8-
+USE mctec;
+SELECT produtos.nome, 
+(select fornecedores.nome from fornecedores where fornecedores.idfornecedor = produtos.idfornecedor)
+FROM produtos
+WHERE preco = (SELECT MAX(preco) FROM produtos);
+
+
+9. 
+use mctec;
+UPDATE fornecedores SET cidade = 'Parnamirim' WHERE fornecedores.nome='Elon Eletro';
+UPDATE fornecedores SET estado = 'RN' WHERE fornecedores.nome='Elon Eletro';
+UPDATE fornecedores SET rua = 'Abel Cabral' WHERE fornecedores.nome='Elon Eletro';
+
+10-
+UPDATE produtos
+ SET preco = preco*1.1
+WHERE idfornecedor= (SELECT idfornecedor FROM fornecedores  WHERE fornecedores.nome = 'Sansul SA');
+
+11 - 
+UPDATE produtos
+SET preco = preco * 0.9
+WHERE idfornecedor = (SELECT idfornecedor FROM fornecedores WHERE nome = 'Mike Electro')
+  AND idcategoria = (SELECT idcategoria FROM categorias WHERE nome = 'TECNOLOGIA');
+
+
+
+
+12-
+SELECT *
+FROM produtos
+WHERE preco BETWEEN 8 AND 2000
+ORDER BY preco DESC;
+
+13-
+
+SELECT *
+FROM produtos
+WHERE preco > 2000
+ORDER BY preco ASC;
+
+14-
+SELECT fornecedores.nome
+FROM fornecedores
+where nome like 'A%'
+15-
+SELECT fornecedores.nome
+FROM fornecedores
+where nome like '%s%'
+
+16- 
+UPDATE produtos 
+SET quantidade = quantidade * 1.15
+WHERE preco < 300;
+
+
+
+17-
+delete from produtos where idcategoria=5;
+
+18-
+
+select *
+from fornecedores
+19-
+select produtos.nome
+from produtos
+where nome like 'T%' AND preco > 400;
+
+20-
+drop produtos;
+

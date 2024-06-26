@@ -1,0 +1,12 @@
+
+
+
+POST  http://localhost:3000/cadastro
+content-type: application/json
+
+{
+    "id": "13",
+    "name": "Sono",
+    "id_genres": "4"
+}
+  

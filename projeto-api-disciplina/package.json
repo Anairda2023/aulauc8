@@ -1,0 +1,18 @@
+{
+  "name": "projeto-api-disciplina",
+  "version": "1.0.0",
+  "description": "Aula fetch",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "author": "Adriana Sousa de Araújo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
