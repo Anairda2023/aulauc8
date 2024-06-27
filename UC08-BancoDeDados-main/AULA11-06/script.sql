@@ -1,0 +1,177 @@
+--CREATE DATABASE MCTEC;
+USE MCTEC;
+CREATE TABLE FORNECEDORES(
+	IDFORNECEDOR INT NOT NULL,
+	NOME VARCHAR(255) NOT NULL,
+	RUA VARCHAR(255) NOT NULL,
+	CIDADE VARCHAR(25) NOT NULL,
+	ESTADO CHAR(2) NOT NULL,
+	PRIMARY KEY(IDFORNECEDOR)
+);
+CREATE TABLE CATEGORIAS(
+	IDCATEGORIA INT NOT NULL,
+	NOME VARCHAR(255) NOT NULL,
+	PRIMARY KEY(IDCATEGORIA)
+);
+CREATE TABLE PRODUTOS(
+	IDPRODUTO INT NOT NULL,
+	NOME VARCHAR(255) NOT NULL,
+	QUANTIDADE INT NOT NULL,
+	PRECO FLOAT NOT NULL,
+	IDFORNECEDOR INT NOT NULL,
+	IDCATEGORIA INT NOT NULL,
+	PRIMARY KEY(IDPRODUTO),
+	FOREIGN KEY(IDFORNECEDOR) REFERENCES FORNECEDORES(IDFORNECEDOR),
+	FOREIGN KEY(IDCATEGORIA) REFERENCES CATEGORIAS(IDCATEGORIA)
+);
+
+INSERT INTO FORNECEDORES(IDFORNECEDOR, NOME, RUA, CIDADE, ESTADO) 
+VALUES
+(1 , 'Ajax SA' ,'Rua Presidente Castelo Branco', 'Porto Alegre' , 'RS'),
+(2 , 'Sansul SA', 'Av Brasil' , 'Rio de Janeiro', 'RJ'),
+(3, 'South Chairs', 'Rua do Moinho', 'Santa Maria' , 'RS'),
+(4, 'Elon Electro', 'Rua Apolo',  'S�o Paulo', 'SP'),
+(5, 'Mike electro',  'Rua Pedro da Cunha', 'Curitiba', 'PR');
+
+INSERT INTO CATEGORIAS(IDCATEGORIA, NOME) 
+VALUES
+(1 ,'Super Luxo'),
+(2 ,'Importado'),
+(3 ,'Tecnologia'),
+(4 ,'Vintage'),
+(5 ,'Supremo');
+
+INSERT INTO PRODUTOS(idPRODUTO, NOME, QUANTIDADE, PRECO, IdFORNECEDOR, IDCATEGORIA)
+VALUES 
+(1, 'Cadeira azul' , 30, 300.00, 5, 5),
+(2, 'Cadeira vermelha', 50, 2150.00, 2, 1),
+(3, 'Guarda-roupa Disney', 400, 829.50, 4,1),
+(4 , 'Torradeira Azul', 20, 9.90, 3, 1),
+(5, 'TV',  30, 3000.25, 2, 2);
+--INSERIR dados de 2 produtos de categoria 3 e qualquer fornecedor
+INSERT INTO PRODUTOS(idPRODUTO, NOME, QUANTIDADE, PRECO, IdFORNECEDOR, IDCATEGORIA)
+VALUES 
+(6, 'Cadeira gamer' , 100, 400, 3, 3),
+(7, 'Notebook', 30, 3500, 2, 3);
+/*2. INSERIR dados de 2 fornecedores distintas, sendo do Estado do 
+RN e outro do estado da PB;*/
+INSERT INTO FORNECEDORES(IDFORNECEDOR, NOME, RUA, CIDADE, ESTADO) 
+VALUES
+(6 , 'Miranda' ,'Rua Prudente de Morais', 'Natal' , 'RN'),
+(7 , 'Rainha' ,'Rua da Para�ba', 'Bananeiras' , 'PB');
+--3. INSERIR dados de mais 1 categoria de nome Nacional
+INSERT INTO CATEGORIAS(IDCATEGORIA, NOME) 
+VALUES
+(6 ,'Nacional');
+/*4. ATUALIZE a tabela produtos, aumentando o pre�o do produto 
+cujo idPRODUTO � 4, para R$ 298.00;*/
+UPDATE PRODUTOS SET PRECO = 298 WHERE IDPRODUTO = 4;
+SELECT * FROM PRODUTOS;
+/*5. RECUPERE da tabela produtos, todos os produtos do Fornecedor 
+localizado no RJ;*/
+SELECT NOME, IDFORNECEDOR FROM PRODUTOS
+WHERE IDFORNECEDOR = 2;
+/*6. RECUPERE da tabela produtos, todos os produtos do Fornecedor localizado
+no RS;*/
+SELECT PRODUTOS.NOME, PRODUTOS.IDFORNECEDOR, FORNECEDORES.IDFORNECEDOR
+FROM PRODUTOS, FORNECEDORES
+WHERE PRODUTOS.IDFORNECEDOR = FORNECEDORES.IDFORNECEDOR AND ESTADO = 'RS';
+/*7. RECUPERE da tabela produtos, todos os produtos do 
+Fornecedores localizados em SP;*/
+SELECT PRODUTOS.NOME -- CAMPOS QUE SER�O EXIBIDOS NA CONSULTA
+FROM PRODUTOS, FORNECEDORES -- TABELAS QUE SER�O UTILIZADAS
+WHERE PRODUTOS.IDFORNECEDOR = FORNECEDORES.IDFORNECEDOR AND --CONDI��O DA CONSULTA (ASSOCIA��O DE PK E FK)
+FORNECEDORES.ESTADO = 'SP'; --QUE PERTENCEM AO ESTADO DE SP
+/*8. RECUPERE da tabela produtos e fornecedores o nome do produto 
+mais caro e o nome do fornecedor deste produto;*/
+SELECT PRODUTOS.NOME AS NOME_DO_PRODUTO, FORNECEDORES.NOME AS FORNECEDOR, 
+PRODUTOS.PRECO AS PRE�O
+FROM PRODUTOS, FORNECEDORES
+WHERE PRODUTOS.IDFORNECEDOR = FORNECEDORES.IDFORNECEDOR AND
+PRECO = (SELECT MAX(PRECO) FROM PRODUTOS);
+/* 9. ATUALIZE a tabela fornecedores, alterando a cidade para Parnamirim, 
+o estado para RN e a Rua para Abel
+Cabral, do Fornecedor cujo nome � Elon Electro;*/
+UPDATE FORNECEDORES -- TABELA QUE SER� ATULIZADA
+SET CIDADE = 'Parnamirim',  ESTADO = 'RN', RUA = 'Abel Cabral' --CAMPOS COM OS NOVOS DADOS
+WHERE NOME = 'Elon Electro';
+SELECT * FROM FORNECEDORES;
+/*10. ATUALIZE a tabela produtos, alterando o pre�o dos produtos em 10% de aumento, 
+cujo fornecedor seja Sansul SA.*/
+UPDATE PRODUTOS 
+SET PRECO = PRECO*1.1 
+WHERE IDFORNECEDOR = (SELECT IDFORNECEDOR FROM FORNECEDORES 
+WHERE NOME = 'sansul SA');
+/*11. ATUALIZE a tabela produtos, alterando o pre�o dos produtos em 10% de diminui��o, cujo fornecedor seja
+Mike electro e a categoria seja Supremo.*/
+UPDATE PRODUTOS 
+SET PRECO = PRECO*0.9
+WHERE 
+IDFORNECEDOR = (SELECT IDFORNECEDOR FROM FORNECEDORES WHERE NOME LIKE 'Mike electro')
+AND
+IDCATEGORIA = (SELECT IDCATEGORIA FROM CATEGORIAS WHERE NOME LIKE 'Supremo');
+/* 12. RECUPERE da tabela produtos, todos os produtos que tenham o pre�o entre 8 e 2.000, 
+ordenados a partir do maior pre�o. */
+SELECT * FROM PRODUTOS
+WHERE PRECO BETWEEN 8 AND  2000 ORDER BY PRECO DESC;
+/*13. RECUPERE da tabela produtos, todos os produtos que tenham o pre�o 
+maior que 2.000, ordenados a partir do menor pre�o.*/
+SELECT * FROM PRODUTOS
+WHERE PRECO>2000 ORDER BY PRECO;
+/*14. RECUPERE da tabela fornecedor, o nome de todos os fornecedores 
+que iniciam com a letra A.*/
+SELECT NOME 
+FROM FORNECEDORES
+WHERE NOME LIKE 'A%';
+/*15. RECUPERE da tabela fornecedor, o nome de todos os fornecedores que contenham a letra S.*/
+SELECT NOME 
+FROM FORNECEDORES
+WHERE NOME LIKE '%S%';
+/*16. ATUALIZE a tabela produtos, aumentando em 15% a quantidade de produtos que tenham o pre�o
+inferior a 300.*/
+UPDATE PRODUTOS 
+SET QUANTIDADE = QUANTIDADE*1.15
+WHERE PRECO < 300;
+/*17. APAGUE da tabela produtos todas os produtos da categoria 5;*/
+DELETE FROM PRODUTOS
+WHERE IDCATEGORIA = 5;
+/*18. RECUPERE da tabela fornecedores, todos os registros cadastrados;*/
+SELECT * FROM FORNECEDORES;
+/*19. RECUPERE da tabela produtos, o nome dos produtos que iniciam 
+com a letra T e tenham o pre�o acima de 400.*/
+SELECT NOME 
+FROM PRODUTOS
+WHERE NOME LIKE 'T%' AND PRECO>400;
+/* 20. APAGUE a tabela produtos;
+DROP TABLE PRODUTOS;
+*/
+/* 21. RECUPERE DA TABELA PRODUTOS, O NOME DO PRODUTO , 
+O PRE�O, O NOME DA SUA CATEGORIA E O NOME DO FORNECEDOR*/
+SELECT PRODUTOS.NOME AS PRODUTO, PRODUTOS.PRECO AS PRE�O, 
+CATEGORIAS.NOME AS CATEGORIA, FORNECEDORES.NOME AS FORNECEDOR
+FROM PRODUTOS, CATEGORIAS, FORNECEDORES
+WHERE 
+CATEGORIAS.IDCATEGORIA = PRODUTOS.IDCATEGORIA 
+AND 
+FORNECEDORES.IDFORNECEDOR = PRODUTOS.IDFORNECEDOR;
+
+/* 22. RECUPERE DA TABELA PRODUTOS, O NOME DO PRODUTO , 
+O PRE�O, O NOME DA SUA CATEGORIA E O NOME DO FORNECEDOR, TODOS ORDENADOS DE FORMA CRESCENTE*/
+SELECT PRODUTOS.NOME AS PRODUTO, PRODUTOS.PRECO AS PRE�O, 
+CATEGORIAS.NOME AS CATEGORIA, FORNECEDORES.NOME AS FORNECEDOR
+FROM PRODUTOS, CATEGORIAS, FORNECEDORES
+WHERE 
+CATEGORIAS.IDCATEGORIA = PRODUTOS.IDCATEGORIA 
+AND 
+FORNECEDORES.IDFORNECEDOR = PRODUTOS.IDFORNECEDOR
+ORDER BY PRODUTOS.NOME ASC; 
+
+SELECT * FROM PRODUTOS;
+
+
+
+
+
+
+
+
